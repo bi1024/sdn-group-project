@@ -1,0 +1,1 @@
+file trong controller chỉ có nhiệm vụ điều hướng
