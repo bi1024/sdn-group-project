@@ -4,7 +4,7 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
-import { connectDB } from "./lib/db.js";
+import { connectDB } from "./src/lib/db.js";
 
 dotenv.config();
 
