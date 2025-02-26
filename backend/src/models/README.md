@@ -1,1 +1,0 @@
-giao tiếp với csdl
