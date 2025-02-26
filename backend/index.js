@@ -1,12 +1,12 @@
 import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
 import { connectDB } from "./src/lib/db.js";
-
-dotenv.config();
 
 const app = express();
 
@@ -20,7 +20,8 @@ app.use(
   })
 );
 
-app.get("/", (req, res) => {//testing code:), ignore
+app.get("/", (req, res) => {
+  //testing code:), ignore
   console.log("ok - temp testing code");
   res.json({ message: "This is working" });
 });
