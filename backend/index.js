@@ -7,12 +7,16 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 
 import { connectDB } from "./src/lib/db.js";
+import bookRouter from "./src/routes/bookRouter.js";
+
 
 const app = express();
 
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(cookieParser());
+
+
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -20,11 +24,7 @@ app.use(
   })
 );
 
-app.get("/", (req, res) => {
-  //testing code:), ignore
-  console.log("ok - temp testing code");
-  res.json({ message: "This is working" });
-});
+app.use("/book", bookRouter);
 
 app.listen(process.env.PORT, () => {
   console.log(`server is running on port ${process.env.PORT}`);
