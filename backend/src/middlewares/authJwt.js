@@ -3,7 +3,6 @@ import { secretKey } from '../config/authConfig.js';
 
 function verifyToken(req, res, next) {
     const token = req.cookies.auth;
-    console.log(token);
     if(!token) {
         return res.status(401).json({errors: 'Unauthenticated: No token provided!'});
     }

@@ -3,7 +3,6 @@ import { isCorrectPassword, signJwt } from "../services/authService.js";
 
 async function signup(req, res) {
     const userData = req.body;
-    console.log(userData);
 
     try {
         const response = await createUser(userData);
@@ -14,11 +13,7 @@ async function signup(req, res) {
 }
 
 async function signin(req, res) {
-    console.log(req.body);
     const { email, password } = req.body;
-    // const inputEmail = req.body.email;
-    // const inputPassword = req.body.password;
-    console.log('here');
     try {
         const user = await getUserFromEmail(email);
         if(!user) {
@@ -34,7 +29,6 @@ async function signin(req, res) {
         }
 
         const token = await signJwt(user);
-        console.log(token);
         res.cookie('auth', token, { httpOnly: true });
 
         res.status(200).send({
