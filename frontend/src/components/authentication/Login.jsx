@@ -4,6 +4,7 @@ import Errors from "./Errors";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 function Login() {
 
@@ -29,7 +30,7 @@ function Login() {
 
   // Hàm submit Form Login
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     let errorsSubmit = {};
     let flag = true;
@@ -57,27 +58,15 @@ function Login() {
         level: 0,
       };
 
-      api
-        .post("login", sendDataApi)
-        .then((response) => {
-          if (response.data.errors) {
-            setErrors(response.data.errors);
-          } else {
-            console.log(response.data);
-            const { token, Auth } = response.data;
-            const authJson = JSON.stringify(Auth);
-            // console.log(Auth);
-            //Lưu token và auth vào local
-            localStorage.setItem("token", token);
-            localStorage.setItem("auth", authJson);
-            toast.success("Login successfully!");
-            navigate("/productHome"); //sau khi login thành công thì chuyển về trang Home
-          }
-        })
-
-        .catch((err) => {
-          setErrors(err);
-        });
+      try {
+        const response = await axios.post('http://localhost:3001/auth/signin', sendDataApi);
+        toast.success('Login successfully!');
+        navigate('/productHome');
+      } catch(err) {
+        errorsSubmit = {};
+        errorsSubmit.response = err.response.data.errors;
+        setErrors(errorsSubmit);
+      }
     }
   };
 

@@ -7,6 +7,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 
 import { connectDB } from "./src/lib/db.js";
+import authRouter from "./src/routes/authRouter.js";
+import { verifyToken } from "./src/middlewares/authJwt.js";
 
 const app = express();
 
@@ -19,6 +21,17 @@ app.use(
     credentials: true,
   })
 );
+
+app.use('/auth', authRouter);
+
+// Ví dụ về authenticate user (verifyToken) trước khi access tài nguyên server:
+app.get(
+  '/user', 
+  [verifyToken],
+  (req, res, next) => {
+      res.status(200).json('User Content!');
+  }
+)
 
 app.get("/", (req, res) => {
   //testing code:), ignore
