@@ -6,7 +6,7 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: [true, "User ID is required"],
-      index: true, 
+      index: true,
     },
     items: [
       {
@@ -29,7 +29,7 @@ const orderSchema = new mongoose.Schema(
     address: {
       type: String,
       required: [true, "Address is required"],
-      trim: true, 
+      trim: true,
     },
     status: {
       type: String,
@@ -38,7 +38,7 @@ const orderSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, 
+    timestamps: true,
   }
 );
 

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import User from "./userSchema.js";
 
 const bookSchema = new mongoose.Schema(
   {
@@ -48,6 +49,6 @@ const bookSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Book = mongoose.model("Book", bookSchema);
+const Book = mongoose.model("Book", bookSchema, "Book");
+
 export default Book;
->>>>>>> main
