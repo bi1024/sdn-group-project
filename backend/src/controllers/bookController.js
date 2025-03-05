@@ -5,6 +5,7 @@ import {
   deleteBookById,
   findAllBooks,
   findBookById,
+  findBooksByUserId,
   updateById,
 } from "../services/bookService.js";
 
@@ -116,6 +117,25 @@ export const getAllBooks = async (req, res) => {
     });
   } catch (err) {
     console.error("Error in getAllBooks - bookController:", err.message);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: "Something went wrong, please try again later.",
+    });
+  }
+};
+
+export const getBooksByUser = async (req, res) => {
+  try {
+    const books = await findBooksByUserId(req.params.userID);
+
+    res.status(200).json({
+      success: true,
+      message: "Books retrieved successfully",
+      data: books,
+    });
+  } catch (err) {
+    console.error("Error in getUserBooks - bookController:", err.message);
     res.status(500).json({
       success: false,
       message: "Internal server error",

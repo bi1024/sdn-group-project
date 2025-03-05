@@ -14,6 +14,10 @@ export const findBookById = async (id) => {
   return await Book.findById(id).populate("userID").exec();
 };
 
+export const findBooksByUserId = async (userID) => {
+  return await Book.find({ userID: userID }).populate("userID").exec();
+};
+
 export const deleteBookById = async (id) => {
   return await Book.findByIdAndDelete(id);
 };
