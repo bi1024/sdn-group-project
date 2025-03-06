@@ -5,64 +5,50 @@ import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 
 function MyProduct() {
-
   const accessToken = localStorage.getItem("token");
   const auth = localStorage.getItem("auth");
-  
-  const [idUser, setIdUser] = useState(null); // Chứa ID của USER hiện tại
-  useEffect( () => {
-    if(auth){
-      const getID = JSON.parse(auth).id;
-      setIdUser(getID)
-    };
-  },[auth]);
 
-  const [myProduct, setMyProduct] = useState([]); // Chứa all product của USER đó
+  const [idUser, setIdUser] = useState("67c1c256b96ee530771ccd90"); // Chứa ID của USER hiện tại
   useEffect(() => {
-    console.log({ myProduct });
-  }, [myProduct]);
+    if (auth) {
+      const getID = JSON.parse(auth).id;
+      setIdUser(getID);
+    }
+  }, [auth]);
+
+  const [books, setBooks] = useState([]); // Chứa all product của USER đó
+  console.log(books);
 
   // Hàm xử lý gọi API lấy data my-product ra
-  const handleFetchMyProduct = () => {
-    if (accessToken) {
-      // Truyền token vào header
-   
-      //Gọi API để lấy dữ liệu
-      api
-        .get("user/my-product", headerConfig(accessToken))
-        .then((res) => {
-          const getDataProductApi = res.data.data;
-          console.log({getDataProductApi});
-          if (getDataProductApi) {
-            setMyProduct(getDataProductApi);
-          }
-        })
+  const handleFetchMyProduct = async () => {
+    // Truyền token vào header
 
-        .catch((error) => {
-          console.log({ error });
-          toast.error("Có lỗi khi lấy data từ sever, hãy xem trong console !");
-        });
+    //Gọi API để lấy dữ liệu
+    try {
+      const response = await api.get("books/user/67c1c256b96ee530771ccd90");
+      setBooks(response.data.data || []);
+    } catch (err) {
+      console.log({ err });
+      toast.error("Có lỗi khi lấy data từ sever, hãy xem trong console !");
     }
   };
 
   useEffect(() => {
-    if (accessToken) {
-      handleFetchMyProduct();
-    }
-  }, [accessToken]);
+    handleFetchMyProduct();
+  }, []);
 
   //Hàm xử lý delete product
   const handleDeleteProduct = (idProduct) => {
-     api.get("user/product/delete/" + idProduct, headerConfig(accessToken))
-        .then( (res) => {
-            const responseDataDelete = res.data.data;
-            setMyProduct(responseDataDelete);
-            toast.success(`Xoá thành công product có ID là ${idProduct}`)
-        })
-
-        .catch( error => {
-            toast.error(error);
-        })
+    api
+      .delete("books/" + idProduct, headerConfig(accessToken))
+      .then((res) => {
+        const responseDataDelete = res.data.data;
+        setBooks(books.filter((book) => book._id !== idProduct));
+        toast.success(`Xoá thành công product có ID là ${idProduct}`);
+      })
+      .catch((error) => {
+        toast.error(error);
+      });
   };
 
   return (
@@ -83,38 +69,42 @@ function MyProduct() {
             </thead>
 
             <tbody>
-              {Object.keys(myProduct).map((valueIndexProduct) => {
-                const product = myProduct[valueIndexProduct]; // các product con sau khi được map ra
+              {books.map((product) => {
                 console.log({ product });
-                const parseImage = JSON.parse(product.image); // 1 mảng chứa các image sau khi được map ra
-                const firstImage = parseImage[0]; // Lấy image đầu tiên trong mảng hiển thị ra
                 return (
                   <>
                     <tr>
                       <td className="cart_id">{product.id}</td>
                       <td className="cart_product">
-                          <img src={`${urlImage}/product/${idUser}/${firstImage}`} alt="" />         
+                        <img src={product.image} alt="" />
                       </td>
                       <td className="cart_description">
                         <h4>
-                          <a href="#">{product.name}</a>
+                          <a href="#">{product.title}</a>
                         </h4>
                       </td>
                       <td className="cart_price">
                         <p>{product.price}$</p>
                       </td>
                       <td className="cart_total">
-                        <i class="fa-solid fa-trash" 
-                        onClick={ () => {
-                            handleDeleteProduct(product.id)
-                        }} 
-                        style={{ display: "inline-block", marginRight: 20, cursor: "pointer" }}>
-                        </i>
+                        <i
+                          class="fa-solid fa-trash"
+                          onClick={() => {
+                            handleDeleteProduct(product._id);
+                          }}
+                          style={{
+                            display: "inline-block",
+                            marginRight: 20,
+                            cursor: "pointer",
+                          }}
+                        ></i>
 
                         <Link to={"/editProduct/" + product.id}>
-                            <i style={{color: "black"}} class="fa-solid fa-pencil"></i>
+                          <i
+                            style={{ color: "black" }}
+                            class="fa-solid fa-pencil"
+                          ></i>
                         </Link>
-
                       </td>
                     </tr>
                   </>
