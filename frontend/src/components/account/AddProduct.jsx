@@ -19,9 +19,6 @@ function AddProduct() {
 
   const accessToken = localStorage.getItem("token"); // Lấy token
 
-  console.log(addProduct);
-  console.log(image);
-
   //Hàm xử lý file avatar
   const handleFileAvatar = (e) => {
     // const files = Array.from(e.target.files); // Hàm Array.from() được sử dụng để tạo một mảng từ một đối tượng giống mảng
@@ -128,7 +125,6 @@ function AddProduct() {
       for (let pair of formData.entries()) {
         console.log(pair[0], pair[1]);
       }
-      console.log("Form data", formData);
 
       // Gọi API để POST
       api

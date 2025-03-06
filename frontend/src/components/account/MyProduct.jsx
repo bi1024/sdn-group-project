@@ -99,7 +99,7 @@ function MyProduct() {
                           }}
                         ></i>
 
-                        <Link to={"/editProduct/" + product.id}>
+                        <Link to={"/editProduct/" + product._id}>
                           <i
                             style={{ color: "black" }}
                             class="fa-solid fa-pencil"
