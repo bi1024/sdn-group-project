@@ -1,4 +1,4 @@
-import Book from "../models/bookSchema.js";
+// import Book from "../models/bookSchema.js";
 import { uploadImage } from "./../lib/cloudinary.js";
 import {
   addBookDocument,
@@ -6,6 +6,7 @@ import {
   findAllBooks,
   findBookById,
   findBooksByUserId,
+  getAllDistinctCategories,
   updateById,
 } from "../services/bookService.js";
 
@@ -13,6 +14,10 @@ export const createBook = async (req, res) => {
   try {
     const { title, author, userID, description, price, categories, stock } =
       req.body;
+
+    let categoriesArray =
+      [] || categories.split(",").map((category) => category.trim());
+    console.log("categories", categories, categoriesArray);
 
     if (req.file) {
       const imageUrl = await uploadImage(req.file.buffer);
@@ -23,7 +28,7 @@ export const createBook = async (req, res) => {
         image: imageUrl,
         description,
         price,
-        categories: categories.split(",").map((category) => category.trim()),
+        categories: categoriesArray,
         stock,
       };
 
@@ -196,6 +201,29 @@ export const deleteBook = async (req, res) => {
       },
     });
   } catch (err) {
+    console.log("Error in deleteBook, bookController", err.message);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: "Something went wrong, please try again later.",
+    });
+  }
+};
+
+//Categories
+export const getCategories = async (req, res) => {
+  // return Book.distinct("categories");
+  try {
+    const categories = await getAllDistinctCategories();
+    res.status(200).json({
+      success: true,
+      message: "Categories retrieved successfully",
+      data: {
+        categories: categories,
+      },
+    });
+  } catch (err) {
+    console.log("Error in getCategories, bookController", err.message);
     res.status(500).json({
       success: false,
       message: "Internal server error",
