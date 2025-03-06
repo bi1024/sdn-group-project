@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost/doan/laravel8/public/api",
+  baseURL: "http://localhost:3001/",
 });
 
 export { api };
