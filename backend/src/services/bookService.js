@@ -28,3 +28,8 @@ export const updateById = async (id, inputBook) => {
   });
   return resultBook;
 };
+
+//categories
+export const getAllDistinctCategories = async () => {
+  return Book.distinct("categories");
+};
