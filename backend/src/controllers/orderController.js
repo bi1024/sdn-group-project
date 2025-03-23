@@ -4,7 +4,7 @@ import * as orderService from "../services/orderService.js";
 export const createOrder = async (req, res) => {
     try{
     const {items, address, phone} = req.body;
-    const newOrder = await orderService.createOrder(req.user.id, items, address, phone);
+    const newOrder = await orderService.createOrder(req.userID, items, address, phone);
     res.status(201).json({message: 'Order thành công', newOrder});
     }catch(err) {
         res.status(500).json({ error: "Internal Server Error" });
@@ -14,7 +14,7 @@ export const createOrder = async (req, res) => {
 //Huỷ order khi trạng thái đang là pending
 export const cancelOrder = async (req, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.userID;
       const { orderId } = req.params;
   
       const result = await orderService.cancelOrder(orderId, userId);
@@ -30,7 +30,7 @@ export const cancelOrder = async (req, res) => {
 //Lấy danh sách đơn hàng(người mua)
 export const getUserOrders = async (req, res) => {
     try{
-       const orders = await orderService.getUserOrders(req.user.id);
+       const orders = await orderService.getUserOrders(req.userID);
        res.status(200).json({orders: orders});
     }catch(err) {
         res.status(500).json({ error: "Internal Server Error" });
@@ -40,7 +40,7 @@ export const getUserOrders = async (req, res) => {
 //Lấy danh sách đơn hàng đang chờ xử lý(người bán)
 export const getSellerOrders = async (req, res) => {
     try{
-        const orders = await orderService.getSellerOrders(req.user.id);
+        const orders = await orderService.getSellerOrders(req.userID);
         res.status(200).json({orders: orders});
     }catch(err) {
         res.status(500).json({ error: "Internal Server Error" });
@@ -50,7 +50,7 @@ export const getSellerOrders = async (req, res) => {
 //Chấp nhận đơn hàng (người bán)
 export const acceptOrder = async (req, res) => {
     try{
-        await orderService.acceptOrder(req.user.id, req.params.orderId);
+        await orderService.acceptOrder(req.userID, req.params.orderId);
         res.status(200).json({ message: "Order accepted" });
     }catch(err) {
         res.status(500).json({ error: "Internal Server Error" });
