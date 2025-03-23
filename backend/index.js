@@ -8,6 +8,9 @@ import cors from "cors";
 
 import { connectDB } from "./src/lib/db.js";
 import bookRouter from "./src/routes/bookRouter.js";
+import cartRouter from "./src/routes/cartRouter.js";
+import orderRouter from "./src/routes/orderRouter.js";
+
 
 
 const app = express();
@@ -24,7 +27,11 @@ app.use(
   })
 );
 
+//Routes
 app.use("/book", bookRouter);
+app.use("/cart", cartRouter);
+app.use("/order", orderRouter);
+
 
 app.listen(process.env.PORT, () => {
   console.log(`server is running on port ${process.env.PORT}`);
