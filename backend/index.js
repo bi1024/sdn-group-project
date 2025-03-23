@@ -8,6 +8,7 @@ import cors from "cors";
 
 import { connectDB } from "./src/lib/db.js";
 import authRouter from "./src/routes/authRouter.js";
+import profile from "./src/routes/profileRoutes.js";
 import { verifyToken } from "./src/middlewares/authJwt.js";
 
 const app = express();
@@ -23,6 +24,7 @@ app.use(
 );
 
 app.use('/auth', authRouter);
+app.use('/profile', profile);
 
 // Ví dụ về authenticate user (verifyToken) trước khi access tài nguyên server:
 app.get(
