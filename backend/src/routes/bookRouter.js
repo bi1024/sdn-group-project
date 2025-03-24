@@ -9,6 +9,7 @@ import {
   getSingleBook,
 } from "../controllers/bookController.js";
 import upload from "../middlewares/upload.js";
+import { verifyToken } from "../middlewares/authJwt.js";
 
 const bookRouter = express.Router();
 
@@ -20,10 +21,10 @@ bookRouter.get("/user/:userID", getBooksByUser);
 
 //todo: add patch
 bookRouter.get("/:id", getSingleBook);
-bookRouter.get("/", getAllBooks);
-bookRouter.post("/", upload.single("image"), createBook);
-bookRouter.put("/:id", upload.single("image"), editBook);
-bookRouter.delete("/:id", deleteBook);
+bookRouter.get("/", getAllBook);
+bookRouter.post("/", verifyToken, upload.single("image"), createBook);
+bookRouter.put("/:id", verifyToken, upload.single("image"), editBook);
+bookRouter.delete("/:id", verifyToken, deleteBook);
 
 
 

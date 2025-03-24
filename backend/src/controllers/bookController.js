@@ -12,8 +12,7 @@ import {
 
 export const createBook = async (req, res) => {
   try {
-    const { title, author, userID, description, price, categories, stock } =
-      req.body;
+    const { title, author, description, price, categories, stock } = req.body;
 
     let categoriesArray =
       [] || categories.split(",").map((category) => category.trim());
@@ -24,7 +23,7 @@ export const createBook = async (req, res) => {
       const inputBook = {
         title,
         author,
-        userID,
+        userID: req.userID,
         image: imageUrl,
         description,
         price,
@@ -67,8 +66,7 @@ export const createBook = async (req, res) => {
 
 export const editBook = async (req, res) => {
   try {
-    const { title, author, userID, description, price, categories, stock } =
-      req.body;
+    const { title, author, description, price, categories, stock } = req.body;
     let imageUrl;
     if (req.file) {
       imageUrl = await uploadImage(req.file.buffer);
@@ -76,7 +74,7 @@ export const editBook = async (req, res) => {
     const inputBook = {
       title,
       author,
-      userID,
+      userID: req.userID,
       // image: imageUrl,
       ...(imageUrl ? { image: imageUrl } : {}),
       description,
