@@ -8,13 +8,13 @@ function Header() {
 
 	const isLogged = !!localStorage.getItem('token'); // Kiem tra token co trong local hay khong
 
-	// Kiểm tra xem đã đăng nhập hay chưa
-	useEffect( () => {
-		// console.log(location.pathname.includes("blog"));
-		if(!isLogged && !location.pathname.includes("blog")){
-			navigate('/login');
-		};
-	},[isLogged, location.pathname] );
+	// // Kiểm tra xem đã đăng nhập hay chưa
+	// useEffect( () => {
+	// 	// console.log(location.pathname.includes("blog"));
+	// 	if(!isLogged && !location.pathname.includes("blog")){
+	// 		navigate('/login');
+	// 	};
+	// },[isLogged, location.pathname] );
 
 	// Hàm xử lý sự kiện click logout
 	const handleLogout = () => {

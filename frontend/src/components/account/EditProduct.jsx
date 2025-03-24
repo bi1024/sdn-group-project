@@ -40,7 +40,7 @@ function EditProduct() {
     console.log(params.id);
     if (params.id) {
       api
-        .get("books/" + params.id)
+        .get("books/me")
         .then((res) => {
           const getDataApi = res.data.data;
           console.log({ getDataApi });

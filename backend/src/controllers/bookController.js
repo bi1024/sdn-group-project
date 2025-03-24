@@ -130,7 +130,7 @@ export const getAllBooks = async (req, res) => {
 
 export const getBooksByUser = async (req, res) => {
   try {
-    const books = await findBooksByUserId(req.params.userID);
+    const books = await findBooksByUserId(req.userID);
 
     res.status(200).json({
       success: true,

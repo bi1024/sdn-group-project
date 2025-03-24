@@ -20,12 +20,11 @@ bookRouter.get("/categories", getCategories);
 bookRouter.get("/user/:userID", getBooksByUser);
 
 //todo: add patch
-bookRouter.get("/:id", getSingleBook);
-bookRouter.get("/", getAllBook);
+bookRouter.get("/me", verifyToken, getBooksByUser);
+bookRouter.get("/", getAllBooks);
 bookRouter.post("/", verifyToken, upload.single("image"), createBook);
 bookRouter.put("/:id", verifyToken, upload.single("image"), editBook);
 bookRouter.delete("/:id", verifyToken, deleteBook);
-
-
+bookRouter.get("/:id", getSingleBook);
 
 export default bookRouter;

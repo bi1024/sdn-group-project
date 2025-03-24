@@ -7,7 +7,6 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 function Login() {
-
   // Form sau khi submit
   const [login, setLogin] = useState({
     email: "",
@@ -30,7 +29,7 @@ function Login() {
 
   // Hàm submit Form Login
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let errorsSubmit = {};
     let flag = true;
@@ -59,10 +58,14 @@ function Login() {
       };
 
       try {
-        const response = await axios.post('http://localhost:3001/auth/signin', sendDataApi);
-        toast.success('Login successfully!');
-        navigate('/productHome');
-      } catch(err) {
+        const response = await axios.post(
+          "http://localhost:3001/auth/signin",
+          sendDataApi,
+          { withCredentials: true }
+        );
+        toast.success("Login successfully!");
+        navigate("/blogs");
+      } catch (err) {
         errorsSubmit = {};
         errorsSubmit.response = err.response.data.errors;
         setErrors(errorsSubmit);
@@ -109,6 +112,7 @@ function Login() {
                   </button>
                 </form>
               </div>
+            
             </div>
             <div className="col-sm-1">
               <h2 className="or">OR</h2>

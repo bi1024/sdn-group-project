@@ -130,7 +130,8 @@ function AddProduct() {
       api
         .post(
           "books",
-          formData
+          formData,
+          { withCredentials: true }
           //, config
         )
         .then((res) => {

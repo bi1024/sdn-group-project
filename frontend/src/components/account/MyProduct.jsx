@@ -25,7 +25,7 @@ function MyProduct() {
 
     //Gọi API để lấy dữ liệu
     try {
-      const response = await api.get("books/user/67c1c256b96ee530771ccd90");
+      const response = await api.get("books/me");
       setBooks(response.data.data || []);
     } catch (err) {
       console.log({ err });
