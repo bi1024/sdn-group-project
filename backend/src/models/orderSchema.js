@@ -31,6 +31,17 @@ const orderSchema = new mongoose.Schema(
       required: [true, "Address is required"],
       trim: true,
     },
+    phone: {
+      type: String,
+      required: [true, "Phone number is required"],
+      trim: true,
+      validate: {
+        validator: function (v) {
+          return /\d{10}/.test(v); // Kiểm tra số điện thoại có đúng định dạng không (10 chữ số)
+        },
+        message: (props) => `${props.value} is not a valid phone number!`,
+      },
+    },
     status: {
       type: String,
       enum: ["Pending", "Completed"],

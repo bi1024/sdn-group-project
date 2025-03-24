@@ -19,6 +19,8 @@ import ProductDetail from "./components/home/ProductDetail";
 import Cart from "./components/home/Cart";
 import CartProductContext from "./context/CartContext";
 import WishList from "./components/home/WishList";
+import Profile from "./components/account/profile";
+
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -28,6 +30,7 @@ root.render(
      <App>
         <ToastContainer />
         <Routes>
+        <Route path="/profile/:userId" element={<Profile />} />
           <Route path="/blogs" element={<BlogList />} />
           <Route path="/blogs/:id" element={<BlogDetail />} />
           <Route path="/login" element={<Login />} />

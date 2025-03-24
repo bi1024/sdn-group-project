@@ -22,25 +22,28 @@ const userSchema = new mongoose.Schema(
     },
 
     fullname: {
-      type: String,
-      required: false,
-      maxLength: [64, "Full name is limited to 64 characters"],
+        type: String,
+        required: false,
+        maxLength: [64, 'Full name is limited to 64 characters'],
+        default: '',
     },
 
     birthday: {
-      type: Date,
-      required: false,
+        type: Date,
+        required: false,
+        default: null,
     },
 
     avatarUrl: {
-      type: String,
-      required: false,
-    },
-  },
+        type: String,
+        required: false,
+        default: '',
+    }
+}, 
+{
+    timestamps: true    
+}
 
-  {
-    timestamps: true,
-  }
 );
 
 const User = mongoose.model("User", userSchema, "User");

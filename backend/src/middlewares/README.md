@@ -1,1 +1,0 @@
-file trong middle chứa middle authentication
