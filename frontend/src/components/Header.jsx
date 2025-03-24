@@ -89,8 +89,8 @@ function Header() {
 						<div class="shop-menu clearfix pull-right">
 							<ul class="nav navbar-nav">	
 							    <li><Link to="/myAccount"><i class="fa fa-lock"></i> Account</Link></li>
-								<li><Link to="/wishList"><i class="fa fa-star"></i> Wishlist</Link></li>
-								<li><a href="checkout.html"><i class="fa fa-crosshairs"></i> Checkout</a></li>
+								<li><Link to="/orderHistory"><i class="fa fa-star"></i> Order History</Link></li>
+								<li><Link to="/orderPending"><i class="fa fa-star"></i> Order Pending</Link></li>
 								<li><Link to="/carts"><i class="fa fa-shopping-cart"></i> Cart</Link></li>
 								{
 									isLogged ? <button  onClick={handleLogout} className="btn btn-default">Logout</button>

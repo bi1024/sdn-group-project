@@ -1,95 +1,98 @@
 import { useEffect, useState } from "react";
 import { api, urlImage } from "../../api";
 import { toast } from "react-toastify";
-import { useCart } from "../../context/CartContext";
+import { useNavigate } from "react-router-dom";
 
 function Cart() {
-  const { setCart, filterProductFollowAccount, getCartFromLocal, handlePostCartFromLocal } = useCart(); // dùng useContext
+  const [cart, setCart] = useState(null); // Đặt cart là null ban đầu
+  const [selectedItems, setSelectedItems] = useState([]); // Dùng để lưu các sản phẩm đã chọn theoID
+  const [selectedItem, setSelectedItem] = useState([]); // Dùng để lưu các sản phẩm đã chọn theo cả 1 items
+  const navigate = useNavigate();
 
-  // const getCartFromLocal = JSON.parse(localStorage.getItem("Purchased")); //Lấy data cart từ local xuống
-  // console.log({ getCartFromLocal });
-
-  // const [idAuth, setIdAuth] = useState(""); //Lưu trữ id của account hiện tại
-  // console.log({idAuth});
-
-  // const [cart, setCart] = useState({}); //Lưu trữ thông tin của tất cả product cart của tất cả account chứ không chỉ mỗi một account nhất định
-  // console.log({cart});
-
-  // useEffect( () => {
-  //     const getAuth =  localStorage.getItem("auth");
-  //     if(getAuth){
-  //         setIdAuth(JSON.parse(getAuth).id);
-  //     };
-  // },[]);
-
-  // //Hàm gọi API để post data Purchased lấy từ local xuống
-  // const handlePostCartFromLocal = () => {
-  //   if (getCartFromLocal) {
-  //     api
-  //       .post("product/cart", getCartFromLocal)
-  //       .then((res) => {
-  //         const cartAPI = res.data.data;
-  //         setCart(cartAPI);
-  //       })
-  //       .catch((err) => {
-  //         toast.error(err);
-  //       });
-  //   } else {
-  //     toast.error("không có data của cart từ local nên không product không được render!");
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   handlePostCartFromLocal();
-  // }, []);
-
-  //Hàm tính giá tổng trong cart
-  const handlePriceTotal = () => {
-    let total = 0;
-
-   filterProductFollowAccount.forEach((pro) => (total += pro.price * pro.qty.qty));
-
-    return total;
+  // Hàm lấy cart theo id
+  const handleFetchCart = async () => {
+    try {
+      const res = await api.get("/cart", { withCredentials: true });
+      setCart(res.data.cart);
+    } catch (err) {
+      console.log(err);
+      toast.error("Failed to load cart");
+    }
   };
 
-  //Hàm xử lý khi tăng số lượng qty
-  const handleIncreaseQty = (idProductChild) => {
-    if (getCartFromLocal[idProductChild]) {
-      getCartFromLocal[idProductChild].qty = getCartFromLocal[idProductChild].qty + 1;
-    }
+  useEffect(() => {
+    handleFetchCart();
+  }, []);
 
-    localStorage.setItem("Purchased", JSON.stringify(getCartFromLocal)); //Đưa lên local lại
-    handlePostCartFromLocal(); //Gọi lại hàm xử lý để thực hiện post lại
+  // Hàm thay đổi quantity của item trong cart
+  const handleUpdateQuantity = async (bookId, quantity) => {
+    try {
+      await api.put("/cart/update", { bookId, quantity }, { withCredentials: true });
+      handleFetchCart();
+    } catch (err) {
+      console.log(err);
+      toast.error("Không update quantity được");
+    }
   };
 
-  //Hàm xử lý khi giảm số lượng qty
-  const handleReduceQty = (idProductChild) => {
-    if (getCartFromLocal[idProductChild]) {
-      getCartFromLocal[idProductChild].qty = getCartFromLocal[idProductChild].qty - 1;
+  // Hàm xóa một sản phẩm trong giỏ hàng
+  const handleRemoveFromCart = async (bookId) => {
+    try {
+      await api.delete("/cart/deleteOne", { data: { bookId }, withCredentials: true });
+      handleFetchCart(); // Tải lại giỏ hàng sau khi xóa thành công
+      toast.success("Sách đã được xóa");
+    } catch (err) {
+      console.log(err);
+      toast.error("Không xóa sách được");
     }
-    localStorage.setItem("Purchased", JSON.stringify(getCartFromLocal)); //Đưa lên local lại
-
-    if (getCartFromLocal[idProductChild].qty < 1) {
-      delete getCartFromLocal[idProductChild];
-    }
-    localStorage.setItem("Purchased", JSON.stringify(getCartFromLocal)); //Đưa lên local lại
-    handlePostCartFromLocal(); //Gọi lại hàm xử lý để thực hiện post lại
   };
 
-  // *********
-  //Hàm xử lý khi xoá product trong cart
-  const handleDeleteProduct = (id, name) => {
-    if (getCartFromLocal[id]) {
-      delete getCartFromLocal[id];
+  // Hàm xóa nhiều sản phẩm trong giỏ hàng
+  const handleRemoveMultipleFromCart = async () => {
+    try {
+      await api.delete("/cart", { data: { bookIds: selectedItems }, withCredentials: true });
+      setSelectedItems([]); // Xóa các mục đã chọn
+      handleFetchCart(); // Tải lại giỏ hàng sau khi xóa thành công
+      toast.success("Các sách đã được xóa");
+    } catch (err) {
+      console.log(err);
+      toast.error("Không xóa nhiều sách được");
     }
-    localStorage.setItem("Purchased", JSON.stringify(getCartFromLocal)); //Đưa lên local lại
-    toast.success(`${name} đã được xoá khỏi Cart`);
-    handlePostCartFromLocal(); //Gọi lại hàm xử lý để thực hiện post lại
   };
 
-  // // Lọc product theo id_Auth
-  // const filterProductFollowAccount = Object.values(cart).filter((productFollow) => productFollow.qty.id_account === idAuth);
-  // console.log({filterProductFollowAccount});
+  // Tính tổng tiền giỏ hàng
+  const calculateTotalPrice = () => {
+    if (!cart || !cart.items) return 0;
+    return cart.items.reduce((total, item) => {
+      return total + item.bookId.price * item.quantity;
+    }, 0);
+  };
+
+  // Hàm thay đổi trạng thái của checkbox
+  const handleCheckboxChange = (productId, item) => {
+    setSelectedItems((prevSelected) =>
+      prevSelected.includes(productId)
+        ? prevSelected.filter((id) => id !== productId) // Bỏ chọn nếu đã chọn
+        : [...prevSelected, productId] // Chọn nếu chưa chọn
+    );
+
+    setSelectedItem((prevSelected) =>
+        prevSelected.includes(item)
+          ? prevSelected.filter((it) => it!== item) // Bỏ chọn nếu đã chọn
+          : [...prevSelected, item] // Chọn nếu chưa chọn
+      );
+  };
+
+  // Hàm xử lý checkout
+  const handleCheckout = () => {
+    // Gửi `selectedItems` (sản phẩm được chọn) đến API để tạo order
+    console.log("Selected items for checkout:", selectedItem);
+    if(selectedItem.length > 0){
+        localStorage.setItem("items", JSON.stringify(selectedItem));
+        navigate("/checkout");
+
+    }
+  };
 
   return (
     <>
@@ -104,83 +107,112 @@ function Cart() {
             </ol>
           </div>
 
-          <div className="table-responsive cart_info">
-            <table className="table table-condensed">
-              <thead>
-                <tr className="cart_menu">
-                  <td className="image">Item</td>
-                  <td className="description"></td>
-                  <td className="price">Price</td>
-                  <td className="quantity">Quantity</td>
-                  <td className="total">Total</td>
-                  <td></td>
-                </tr>
-              </thead>
+          {cart && cart.items.length > 0 ? (
+            <div className="table-responsive cart_info">
+              <table className="table table-condensed">
+                <thead>
+                  <tr className="cart_menu">
+                    <td className="image">Item</td>
+                    <td className="description">Description</td>
+                    <td className="price">Price</td>
+                    <td className="quantity">Quantity</td>
+                    <td className="total">Total</td>
+                    <td>Select</td>
+                    <td>Delete</td>
+                  </tr>
+                </thead>
 
-              <tbody>
-                {filterProductFollowAccount.length &&
-                  filterProductFollowAccount.map((productChild) => {
-                    console.log({ productChild });
-                    const idUser = productChild.id_user;
-                    const getImage = JSON.parse(productChild.image);
-                    const firstImage = getImage[0];
+                <tbody>
+                  {cart.items.map((item) => {
+                    const { bookId, quantity } = item;
+                    const { _id, title, price, image, author } = bookId;
                     return (
-                      <>
-                        <tr>
-                          <td className="cart_product">
-                            <a href="">
-                              <img src={`${urlImage}/product/${idUser}/${firstImage}`} />
+                      <tr key={_id}>
+                        <td className="cart_product">
+                          <a href="#">
+                            <img src={image} alt={title} />
+                          </a>
+                        </td>
+                        <td className="cart_description">
+                          <h4>
+                            <a href="#">{title}</a>
+                          </h4>
+                          <p>{author}</p>
+                        </td>
+                        <td className="cart_price">
+                          <p>{price}$</p>
+                        </td>
+                        <td className="cart_quantity">
+                          <div className="cart_quantity_button">
+                            <a
+                              className="cart_quantity_up"
+                              href="#"
+                              onClick={() => handleUpdateQuantity(_id, quantity + 1)}
+                            >
+                              +
                             </a>
-                          </td>
-                          <td className="cart_description">
-                            <h4>
-                              <a href="">{productChild.name}</a>
-                            </h4>
-                            {/* <p>Web ID: 1089772</p> */}
-                          </td>
-                          <td className="cart_price">
-                            <p>{productChild.price}$</p>
-                          </td>
-                          <td className="cart_quantity">
-                            <div className="cart_quantity_button">
-                              <a className="cart_quantity_up" onClick={() => handleIncreaseQty(productChild.id)}>
-                               
-                                +{" "}
-                              </a>
-                              <input
-                                className="cart_quantity_input"
-                                type="text"
-                                name="quantity"
-                                value={productChild.qty.qty}
-                                autocomplete="off"
-                                size="2"
-                              />
-                              <a className="cart_quantity_down" onClick={() => handleReduceQty(productChild.id)}>
-                                {" "}
-                                -{" "}
-                              </a>
-                            </div>
-                          </td>
-                          <td className="cart_total">
-                            <p className="cart_total_price">{productChild.price * productChild.qty.qty}$</p>
-                          </td>
-                          <td className="cart_delete" onClick={() => handleDeleteProduct(productChild.id, productChild.name)}>
-                            <a className="cart_quantity_delete" href="#">
-                              <i className="fa fa-times"></i>
+                            <input
+                              className="cart_quantity_input"
+                              type="text"
+                              name="quantity"
+                              value={quantity}
+                              autoComplete="off"
+                              size="2"
+                              onChange={(e) => handleUpdateQuantity(_id, +e.target.value)}
+                            />
+                            <a
+                              className="cart_quantity_down"
+                              href="#"
+                              onClick={() => handleUpdateQuantity(_id, quantity - 1)}
+                            >
+                              -
                             </a>
-                          </td>
-                        </tr>
-                      </>
+                          </div>
+                        </td>
+                        <td className="cart_total">
+                          <p className="cart_total_price">{price * quantity}$</p>
+                        </td>
+                        <td className="cart_select">
+                          <input
+                            type="checkbox"
+                            onChange={() => handleCheckboxChange(_id, item)}
+                            checked={selectedItems.includes(_id)}
+                          />
+                        </td>
+                        <td className="cart_delete">
+                          <a
+                            className="cart_quantity_delete"
+                            href="#"
+                            onClick={() => handleRemoveFromCart(_id)}
+                          >
+                            <i className="fa fa-times"></i>
+                          </a>
+                        </td>
+                      </tr>
                     );
                   })}
-              </tbody>
-            </table>
+                </tbody>
+              </table>
 
-            <div class="oke">
-              <div class="totall">Total</div>
-              <h3>{handlePriceTotal()}$</h3>
+              <div className="oke">
+                <div className="totall">Total</div>
+                <h3>{calculateTotalPrice()}$</h3>
+              </div>
+              <div>
+                
+              </div>
+              <button onClick={handleCheckout} className="btn btn-primary">Proceed to Checkout</button>
+
+              {/* Xóa nhiều sản phẩm */}
+              {selectedItems.length > 0 && (
+                <button onClick={handleRemoveMultipleFromCart} className="btn btn-danger">
+                  Remove 
+                </button>
+              )}
             </div>
-          </div>
+          ) : (
+            <p>Your cart is empty.</p>
+          )}
         </div>
       </section>
     </>

@@ -7,20 +7,19 @@ export const addBookDocument = async (bookData) => {
 };
 
 export const findAllBooks = async () => {
-  //todo:populate user
-  const books = await Book.find().populate("userID").exec();
-
-  return books;
+  return await Book.find().populate("userID").exec();
 };
 
 export const findBookById = async (id) => {
-  const book = await Book.findById(id).populate("userID").exec();
-  return book;
+  return await Book.findById(id).populate("userID").exec();
+};
+
+export const findBooksByUserId = async (userID) => {
+  return await Book.find({ userID: userID }).populate("userID").exec();
 };
 
 export const deleteBookById = async (id) => {
-  const book = await Book.findByIdAndDelete(id);
-  return book;
+  return await Book.findByIdAndDelete(id);
 };
 
 export const updateById = async (id, inputBook) => {
@@ -28,4 +27,9 @@ export const updateById = async (id, inputBook) => {
     new: true,
   });
   return resultBook;
+};
+
+//categories
+export const getAllDistinctCategories = async () => {
+  return Book.distinct("categories");
 };

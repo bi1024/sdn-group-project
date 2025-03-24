@@ -29,7 +29,7 @@ app.use(
 );
 
 //Routes
-app.use("/book", bookRouter);
+app.use("/books", bookRouter);
 app.use("/cart", cartRouter);
 app.use("/order", orderRouter);
 app.use('/auth', authRouter);

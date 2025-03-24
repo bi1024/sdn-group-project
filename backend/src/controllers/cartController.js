@@ -14,6 +14,8 @@ export const getCart = async (req, res) => {
 export const addToCart = async (req, res) => {
     try{
         const {bookId, quantity} = req.body;
+        const id = req.userID;
+        console.log({id});
         const addCart = await cartService.addToCart(req.userID, bookId, quantity);
 
         // Tìm sách vừa được thêm vào giỏ hàng (mục vừa được thêm hoặc cập nhật)
@@ -27,8 +29,8 @@ export const addToCart = async (req, res) => {
 //Cập nhật số lượng sách trong cart
 export const updateCart = async (req, res) => {
     try{
-        const {quantity} = req.body;
-        const updated = await cartService.updateCart(req.userID, req.params.bookId, quantity);
+        const {quantity, bookId} = req.body;
+        const updated = await cartService.updateCart(req.userID, bookId, quantity);
 
         if(!updated){
             res.status(404).json({ error: "Không tìm thấy sách" });
@@ -44,7 +46,7 @@ export const updateCart = async (req, res) => {
 //Xoá 1 sách ra khỏi cart
 export const removeFromCart = async (req, res) => {
     try{
-        await cartService.removeFromCart(req.userID, req.params.bookId);
+        await cartService.removeFromCart(req.userID, req.body.bookId);
         res.status(200).json({message: "Xoá sách thành công" });
     }catch(err) {
         res.status(500).json({error: "Internal Server Error"});

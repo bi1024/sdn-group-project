@@ -4,6 +4,9 @@ import * as orderService from "../services/orderService.js";
 export const createOrder = async (req, res) => {
     try{
     const {items, address, phone} = req.body;
+    console.log({items});
+    console.log({address});
+
     const newOrder = await orderService.createOrder(req.userID, items, address, phone);
     res.status(201).json({message: 'Order thành công', newOrder});
     }catch(err) {
@@ -41,6 +44,7 @@ export const getUserOrders = async (req, res) => {
 export const getSellerOrders = async (req, res) => {
     try{
         const orders = await orderService.getSellerOrders(req.userID);
+        console.log({orders})
         res.status(200).json({orders: orders});
     }catch(err) {
         res.status(500).json({ error: "Internal Server Error" });
