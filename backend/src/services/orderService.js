@@ -54,7 +54,7 @@ export const getSellerOrders = (sellerId) => {
     return SellerOrder.find({sellerId, status: 'Pending'})
         .populate('buyerId', 'username email')
         .populate('bookId', 'title price image')
-        .populate('orderId', 'address phone createdAt');
+        .populate('orderId', 'address phone createdAt items');
 };
 
 //Chấp nhận đơn hàng (người bán)
