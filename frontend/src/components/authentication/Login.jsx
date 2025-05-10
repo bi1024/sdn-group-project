@@ -4,9 +4,9 @@ import Errors from "./Errors";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 function Login() {
-
   // Form sau khi submit
   const [login, setLogin] = useState({
     email: "",
@@ -15,7 +15,7 @@ function Login() {
 
   const [errors, setErrors] = useState({}); // useState cho lỗi
 
-  const navigate = useNavigate(); //hook điều hướng
+  const navigate = useNavigate();
 
   // Xử lý Forminput login khi các trường trong input có thay đổi
   const handleLoginChange = (event) => {
@@ -29,7 +29,7 @@ function Login() {
 
   // Hàm submit Form Login
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let errorsSubmit = {};
     let flag = true;
@@ -57,27 +57,23 @@ function Login() {
         level: 0,
       };
 
-      api
-        .post("login", sendDataApi)
-        .then((response) => {
-          if (response.data.errors) {
-            setErrors(response.data.errors);
-          } else {
-            console.log(response.data);
-            const { token, Auth } = response.data;
-            const authJson = JSON.stringify(Auth);
-            // console.log(Auth);
-            //Lưu token và auth vào local
-            localStorage.setItem("token", token);
-            localStorage.setItem("auth", authJson);
-            toast.success("Login successfully!");
-            navigate("/productHome"); //sau khi login thành công thì chuyển về trang Home
-          }
-        })
-
-        .catch((err) => {
-          setErrors(err);
-        });
+      try {
+        const response = await axios.post("http://localhost:3001/auth/signin", sendDataApi,{ withCredentials: true });
+        // Lưu thông tin user (auth) vào localStorage
+        const authData = {
+          userID: response.data.userID,
+          username: response.data.username,
+          email: response.data.email,
+        };
+        localStorage.setItem('auth', JSON.stringify(authData)); 
+        localStorage.setItem("token", response.data.accessToken);
+        toast.success("Login successfully!");
+        navigate("/productHome");
+      } catch (err) {
+        errorsSubmit = {};
+        errorsSubmit.response = err.response.data.errors;
+        setErrors(errorsSubmit);
+      }
     }
   };
 
@@ -91,19 +87,9 @@ function Login() {
                 <h2>Login to your account</h2>
                 <form onSubmit={handleSubmit}>
                   {/* Nhập email */}
-                  <input
-                    type="email"
-                    placeholder="Email Address"
-                    name="email"
-                    onChange={handleLoginChange}
-                  />
+                  <input type="email" placeholder="Email Address" name="email" onChange={handleLoginChange} />
                   {/* Nhập password */}
-                  <input
-                    type="password"
-                    placeholder="Password"
-                    name="password"
-                    onChange={handleLoginChange}
-                  />
+                  <input type="password" placeholder="Password" name="password" onChange={handleLoginChange} />
                   {/* Click checkbox */}
                   <span>
                     <input
@@ -120,6 +106,7 @@ function Login() {
                   </button>
                 </form>
               </div>
+            
             </div>
             <div className="col-sm-1">
               <h2 className="or">OR</h2>
